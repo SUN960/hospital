@@ -19,10 +19,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="部门状态" prop="status">
+      <el-form-item label="预约状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="请选择部门状态" clearable size="small">
           <el-option
-            v-for="dict in dict.type.sys_common_status"
+            v-for="dict in dict.type.hos_appointment"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
@@ -85,21 +85,16 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="预约编号" align="center" prop="appointId" />
       <el-table-column label="患者账号" align="center" prop="userId" />
-      <el-table-column label="医生名称" align="center" prop="docId" />
+      <el-table-column label="医生名称" align="center" prop="hosDoc.docName" />
       <el-table-column label="病情" align="center" prop="illSituation" />
-      <el-table-column label="开始时间 " align="center" prop="startTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.startTime, '{y}-{m}-{d}') }}</span>
-        </template>
+      <el-table-column label="日期" align="center" prop="dateTime" />
+      <el-table-column label="开始时间 " align="center" prop="startTime" width="100">  
       </el-table-column>
-      <el-table-column label="结束时间" align="center" prop="endTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.endTime, '{y}-{m}-{d}') }}</span>
-        </template>
+      <el-table-column label="结束时间" align="center" prop="endTime" width="100">
       </el-table-column>
-      <el-table-column label="部门状态" align="center" prop="status">
+      <el-table-column label="预约状态" align="center" prop="status">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_common_status" :value="scope.row.status"/>
+          <dict-tag :options="dict.type.hos_appointment" :value="scope.row.status"/>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
@@ -162,7 +157,7 @@
         <el-form-item label="部门状态">
           <el-radio-group v-model="form.status">
             <el-radio
-              v-for="dict in dict.type.sys_common_status"
+              v-for="dict in dict.type.hos_appointment"
               :key="dict.value"
 :label="dict.value"
             >{{dict.label}}</el-radio>
@@ -185,7 +180,7 @@ import { listInfo, getInfo, delInfo, addInfo, updateInfo } from "@/api/hospital/
 
 export default {
   name: "Info",
-  dicts: ['sys_common_status'],
+  dicts: ['hos_appointment'],
   data() {
     return {
       // 遮罩层
@@ -261,6 +256,7 @@ export default {
         userId: null,
         docId: null,
         illSituation: null,
+        dateTime: null,
         startTime: null,
         endTime: null,
         status: "0",

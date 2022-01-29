@@ -2,7 +2,7 @@
   <div class="app-container home">
     <el-row :gutter="20">
       <el-col :sm="25" :lg="24">
-        <blockquote class="text-warning" style="font-size: 20px"  >
+        <blockquote class="text-warning" style="font-size: 120px"  >
         <h1></h1>
           <br />
          <h1> </h1>

@@ -32,21 +32,42 @@ public class HosInfo extends BaseEntity
     @Excel(name = "病情")
     private String illSituation;
 
+    @Excel(name="日期")
+    private String dateTime;
+
     /** 开始时间  */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "开始时间 ", width = 30, dateFormat = "yyyy-MM-dd")
-    private Date startTime;
+
+    @Excel(name = "开始时间 ")
+    private String startTime;
 
     /** 结束时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "结束时间", width = 30, dateFormat = "yyyy-MM-dd")
-    private Date endTime;
+
+    @Excel(name = "结束时间")
+    private String endTime;
 
     /** 状态（0正常 1停用） */
     @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
     private String status;
 
-    public void setAppointId(Long appointId) 
+    private HosDoc hosDoc;
+
+    public void setHosDoc(HosDoc hosDoc) {
+        this.hosDoc = hosDoc;
+    }
+
+    public HosDoc getHosDoc() {
+        return hosDoc;
+    }
+
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public String getDateTime() {
+        return dateTime;
+    }
+
+    public void setAppointId(Long appointId)
     {
         this.appointId = appointId;
     }
@@ -82,21 +103,21 @@ public class HosInfo extends BaseEntity
     {
         return illSituation;
     }
-    public void setStartTime(Date startTime) 
+    public void setStartTime(String startTime)
     {
         this.startTime = startTime;
     }
 
-    public Date getStartTime() 
+    public String getStartTime()
     {
         return startTime;
     }
-    public void setEndTime(Date endTime) 
+    public void setEndTime(String endTime)
     {
         this.endTime = endTime;
     }
 
-    public Date getEndTime1()
+    public String getEndTime()
     {
         return endTime;
     }
@@ -118,13 +139,14 @@ public class HosInfo extends BaseEntity
             .append("docId", getDocId())
             .append("illSituation", getIllSituation())
             .append("startTime", getStartTime())
-            .append("endTime", getEndTime1())
+            .append("endTime", getEndTime())
             .append("status", getStatus())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())
             .append("updateBy", getUpdateBy())
             .append("updateTime", getUpdateTime())
             .append("remark", getRemark())
+                .append("hosDoc",getHosDoc())
             .toString();
     }
 }

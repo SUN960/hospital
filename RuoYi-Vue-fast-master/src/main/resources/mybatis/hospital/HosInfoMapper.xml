@@ -9,6 +9,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="userId"    column="user_id"    />
         <result property="docId"    column="doc_id"    />
         <result property="illSituation"    column="ill_situation"    />
+        <result property="dateTime" column="date_time"/>
         <result property="startTime"    column="start_time"    />
         <result property="endTime"    column="end_time"    />
         <result property="status"    column="status"    />
@@ -17,10 +18,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateBy"    column="update_by"    />
         <result property="updateTime"    column="update_time"    />
         <result property="remark"    column="remark"    />
+        <association property="hosDoc" column="doc_id" javaType="HosDoc" resultMap="docResult"/>
     </resultMap>
 
+    <resultMap type="HosDoc" id="docResult">
+    <result property="docId"    column="doc_id"    />
+    <result property="docName"    column="doc_name"    />
+    <result property="sex"    column="sex"    />
+    </resultMap>
     <sql id="selectHosInfoVo">
-        select appoint_id, user_id, doc_id, ill_situation, start_time, end_time, status, create_by, create_time, update_by, update_time, remark from hos_info
+        select i.*,hd.*
+        from hos_info i
+        left join hos_doc hd on i.doc_id = hd.doc_id
+
     </sql>
 
     <select id="selectHosInfoList" parameterType="HosInfo" resultMap="HosInfoResult">
@@ -28,6 +38,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="userId != null "> and user_id = #{userId}</if>
             <if test="docId != null "> and doc_id = #{docId}</if>
+            <if test="dateTime != null "> and date_time = #{dateTime}</if>
             <if test="illSituation != null  and illSituation != ''"> and ill_situation = #{illSituation}</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
         </where>
@@ -44,6 +55,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">user_id,</if>
             <if test="docId != null">doc_id,</if>
             <if test="illSituation != null and illSituation != ''">ill_situation,</if>
+            <if test="dateTime != null and dateTime != ''">date_time = #{dateTime},</if>
             <if test="startTime != null">start_time,</if>
             <if test="endTime != null">end_time,</if>
             <if test="status != null">status,</if>
@@ -57,6 +69,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">#{userId},</if>
             <if test="docId != null">#{docId},</if>
             <if test="illSituation != null and illSituation != ''">#{illSituation},</if>
+            <if test="dateTime != null and dateTime != ''">date_time = #{dateTime},</if>
             <if test="startTime != null">#{startTime},</if>
             <if test="endTime != null">#{endTime},</if>
             <if test="status != null">#{status},</if>
@@ -74,6 +87,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">user_id = #{userId},</if>
             <if test="docId != null">doc_id = #{docId},</if>
             <if test="illSituation != null and illSituation != ''">ill_situation = #{illSituation},</if>
+            <if test="dateTime != null and dateTime != ''">date_time = #{dateTime},</if>
             <if test="startTime != null">start_time = #{startTime},</if>
             <if test="endTime != null">end_time = #{endTime},</if>
             <if test="status != null">status = #{status},</if>

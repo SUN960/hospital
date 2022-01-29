@@ -49,6 +49,8 @@ public class HosDoc extends BaseEntity
     private HosAdo hosAdo;
     /** 显示顺序 */
     private Long orderNum;
+    @Excel(name = "职称")
+    private String prot;
 
     /** 部门状态（0正常 1停用） */
     @Excel(name = "部门状态", readConverterExp = "0=正常,1=停用")
@@ -67,7 +69,15 @@ public class HosDoc extends BaseEntity
         this.docId = docId;
     }
 
-    public Long getDocId() 
+    public void setProt(String prot) {
+        this.prot = prot;
+    }
+
+    public String getProt() {
+        return prot;
+    }
+
+    public Long getDocId()
     {
         return docId;
     }
@@ -175,6 +185,7 @@ public class HosDoc extends BaseEntity
             .append("docId", getDocId())
             .append("docName", getDocName())
             .append("sex", getSex())
+                .append("prot",getProt())
             .append("birthTime", getBirthTime())
             .append("email", getEmail())
             .append("phonenumber", getPhonenumber())

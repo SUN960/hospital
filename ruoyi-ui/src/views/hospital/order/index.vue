@@ -18,10 +18,10 @@
           placeholder="选择日期">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="部门状态" prop="status">
+      <el-form-item label="支付状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="请选择部门状态" clearable size="small">
           <el-option
-            v-for="dict in dict.type.sys_normal_disable"
+            v-for="dict in dict.type.hos_pay"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
@@ -83,19 +83,19 @@
     <el-table v-loading="loading" :data="orderList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="订单编号" align="center" prop="orderId" />
-      <el-table-column label="账号" align="center" prop="userId" />
-      <el-table-column label="日期" align="center" prop="date" width="180">
+      <el-table-column label="用户账号" align="center" prop="userId" />
+      <el-table-column label="时间" align="center" prop="date" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.date, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.date, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="挂号费用" align="center" prop="cost" />
       <el-table-column label="政策减免" align="center" prop="policy" />
       <el-table-column label="其它费用" align="center" prop="otherCost" />
       <el-table-column label="总费用" align="center" prop="totalCost" />
-      <el-table-column label="部门状态" align="center" prop="status">
+      <el-table-column label="支付状态" align="center" prop="status">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
+          <dict-tag :options="dict.type.hos_pay" :value="scope.row.status"/>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
@@ -133,14 +133,6 @@
         <el-form-item label="账号" prop="userId">
           <el-input v-model="form.userId" placeholder="请输入账号" />
         </el-form-item>
-        <el-form-item label="日期" prop="date">
-          <el-date-picker clearable size="small"
-            v-model="form.date"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="选择日期">
-          </el-date-picker>
-        </el-form-item>
         <el-form-item label="挂号费用" prop="cost">
           <el-input v-model="form.cost" placeholder="请输入挂号费用" />
         </el-form-item>
@@ -156,7 +148,7 @@
         <el-form-item label="部门状态">
           <el-radio-group v-model="form.status">
             <el-radio
-              v-for="dict in dict.type.sys_normal_disable"
+              v-for="dict in dict.type.hos_pay"
               :key="dict.value"
 :label="dict.value"
             >{{dict.label}}</el-radio>
@@ -179,7 +171,7 @@ import { listOrder, getOrder, delOrder, addOrder, updateOrder } from "@/api/hosp
 
 export default {
   name: "Order",
-  dicts: ['sys_normal_disable'],
+  dicts: ['hos_pay'],
   data() {
     return {
       // 遮罩层

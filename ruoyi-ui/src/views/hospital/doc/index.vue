@@ -100,6 +100,7 @@
           <dict-tag :options="dict.type.sys_user_sex" :value="scope.row.sex"/>
         </template>
       </el-table-column>
+      <el-table-column label="职称" align="center" prop="prot" />
       <el-table-column label="出生日期" align="center" prop="birthTime" />
       <el-table-column label="邮箱" align="center" prop="email" />
       <el-table-column label="手机号码" align="center" prop="phonenumber" />
@@ -153,8 +154,12 @@
 :value="dict.value"
             ></el-option>
           </el-select>
+          </el-form-item>
+
+          <el-form-item label="职称" prop="prot">
+          <el-input v-model="form.prot" placeholder="请输入职称" />
         </el-form-item>
-        <el-form-item label="年龄" prop="birthTime">
+        <el-form-item label="出生日期" prop="birthTime">
           <el-input v-model="form.birthTime" placeholder="请输入年龄" />
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
@@ -259,6 +264,7 @@ export default {
         docId: null,
         docName: null,
         sex: null,
+        prot: null,
         birthTime: null,
         email: null,
         phonenumber: null,

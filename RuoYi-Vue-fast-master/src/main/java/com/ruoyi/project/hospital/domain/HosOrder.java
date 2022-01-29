@@ -26,8 +26,8 @@ public class HosOrder extends BaseEntity
     private String userId;
 
     /** 日期 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "日期", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:SS")
+    @Excel(name = "日期", width = 30, dateFormat = "yyyy-MM-dd HH:mm:SS")
     private Date date;
 
     /** 挂号费用 */

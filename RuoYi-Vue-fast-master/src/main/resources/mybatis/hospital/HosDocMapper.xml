@@ -8,6 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="docId"    column="doc_id"    />
         <result property="docName"    column="doc_name"    />
         <result property="sex"    column="sex"    />
+        <result property="prot"    column="prot"    />
         <result property="birthTime"    column="birth_time"    />
         <result property="email"    column="email"    />
         <result property="phonenumber"    column="phonenumber"    />
@@ -43,6 +44,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="docName != null  and docName != ''"> and doc_name like concat('%', #{docName}, '%')</if>
             <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
+            <if test="prot != null  and prot != ''"> and prot = #{prot}</if>
             <if test="email != null  and email != ''"> and email = #{email}</if>
             <if test="phonenumber != null  and phonenumber != ''"> and phonenumber = #{phonenumber}</if>
             <if test="adoId != null "> and ado_id = #{adoId}</if>
@@ -60,6 +62,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="docName != null and docName != ''">doc_name,</if>
             <if test="sex != null">sex,</if>
+            <if test="prot != null  and prot != ''"> and prot = #{prot}</if>
             <if test="birthTime != null">birth_time,</if>
             <if test="email != null">email,</if>
             <if test="phonenumber != null">phonenumber,</if>
@@ -75,6 +78,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="docName != null and docName != ''">#{docName},</if>
             <if test="sex != null">#{sex},</if>
+            <if test="prot != null  and prot != ''"> and prot = #{prot}</if>
             <if test="birthTime != null">#{birthTime},</if>
             <if test="email != null">#{email},</if>
             <if test="phonenumber != null">#{phonenumber},</if>
@@ -94,6 +98,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <if test="docName != null and docName != ''">doc_name = #{docName},</if>
             <if test="sex != null">sex = #{sex},</if>
+            <if test="prot != null  and prot != ''"> and prot = #{prot}</if>
             <if test="birthTime != null">birth_time = #{birthTime},</if>
             <if test="email != null">email = #{email},</if>
             <if test="phonenumber != null">phonenumber = #{phonenumber},</if>
