@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.hospital.mapper.HosDutyMapper">
+    
+    <resultMap type="HosDuty" id="HosDutyResult">
+        <result property="dutyId"    column="duty_id"    />
+        <result property="adoId"    column="ado_id"    />
+        <result property="docId"    column="doc_id"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="phone"    column="phone"    />
+        <result property="dutyTime"    column="duty_time"    />
+        <result property="beginTime"    column="begin_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectHosDutyVo">
+        select duty_id, ado_id, doc_id, order_num, phone, duty_time, begin_time, end_time, status, create_by, create_time, update_by, update_time, remark from hos_duty
+    </sql>
+
+    <select id="selectHosDutyList" parameterType="HosDuty" resultMap="HosDutyResult">
+        <include refid="selectHosDutyVo"/>
+        <where>  
+            <if test="adoId != null "> and ado_id = #{adoId}</if>
+            <if test="docId != null "> and doc_id = #{docId}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="dutyTime != null "> and duty_time = #{dutyTime}</if>
+            <if test="beginTime != null  and beginTime != ''"> and begin_time = #{beginTime}</if>
+            <if test="endTime != null  and endTime != ''"> and end_time = #{endTime}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectHosDutyById" parameterType="Long" resultMap="HosDutyResult">
+        <include refid="selectHosDutyVo"/>
+        where duty_id = #{dutyId}
+    </select>
+        
+    <insert id="insertHosDuty" parameterType="HosDuty" useGeneratedKeys="true" keyProperty="dutyId">
+        insert into hos_duty
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="adoId != null">ado_id,</if>
+            <if test="docId != null">doc_id,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="phone != null">phone,</if>
+            <if test="dutyTime != null">duty_time,</if>
+            <if test="beginTime != null">begin_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="adoId != null">#{adoId},</if>
+            <if test="docId != null">#{docId},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="dutyTime != null">#{dutyTime},</if>
+            <if test="beginTime != null">#{beginTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHosDuty" parameterType="HosDuty">
+        update hos_duty
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="adoId != null">ado_id = #{adoId},</if>
+            <if test="docId != null">doc_id = #{docId},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="dutyTime != null">duty_time = #{dutyTime},</if>
+            <if test="beginTime != null">begin_time = #{beginTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where duty_id = #{dutyId}
+    </update>
+
+    <delete id="deleteHosDutyById" parameterType="Long">
+        delete from hos_duty where duty_id = #{dutyId}
+    </delete>
+
+    <delete id="deleteHosDutyByIds" parameterType="String">
+        delete from hos_duty where duty_id in 
+        <foreach item="dutyId" collection="array" open="(" separator="," close=")">
+            #{dutyId}
+        </foreach>
+    </delete>
+    
+</mapper>
