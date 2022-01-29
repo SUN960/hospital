@@ -86,7 +86,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteHosAdoByIds" parameterType="String">
-        delete from hos_ado where ado_id in 
+        delete from hos_ado where ado_id in
         <foreach item="adoId" collection="array" open="(" separator="," close=")">
             #{adoId}
         </foreach>

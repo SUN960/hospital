@@ -96,7 +96,7 @@ public class HosInfo extends BaseEntity
         this.endTime = endTime;
     }
 
-    public Date getEndTime() 
+    public Date getEndTime1()
     {
         return endTime;
     }
@@ -118,7 +118,7 @@ public class HosInfo extends BaseEntity
             .append("docId", getDocId())
             .append("illSituation", getIllSituation())
             .append("startTime", getStartTime())
-            .append("endTime", getEndTime())
+            .append("endTime", getEndTime1())
             .append("status", getStatus())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())

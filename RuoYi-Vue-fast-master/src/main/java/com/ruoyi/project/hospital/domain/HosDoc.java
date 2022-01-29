@@ -1,5 +1,6 @@
 package com.ruoyi.project.hospital.domain;
 
+import java.util.Calendar;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -45,6 +46,7 @@ public class HosDoc extends BaseEntity
     @Excel(name = "科室ID")
     private Long adoId;
 
+    private HosAdo hosAdo;
     /** 显示顺序 */
     private Long orderNum;
 
@@ -52,7 +54,15 @@ public class HosDoc extends BaseEntity
     @Excel(name = "部门状态", readConverterExp = "0=正常,1=停用")
     private String status;
 
-    public void setDocId(Long docId) 
+    public void setHosAdo(HosAdo hosAdo) {
+        this.hosAdo = hosAdo;
+    }
+
+    public HosAdo getHosAdo() {
+        return hosAdo;
+    }
+
+    public void setDocId(Long docId)
     {
         this.docId = docId;
     }
@@ -134,6 +144,31 @@ public class HosDoc extends BaseEntity
         return status;
     }
 
+//    public  int setAge(Date birthDay) throws Exception {
+//        Calendar cal = Calendar.getInstance();
+//        if (cal.before(birthDay)) { //出生日期晚于当前时间，无法计算
+//            throw new IllegalArgumentException(
+//                    "The birthDay is before Now.It's unbelievable!");
+//        }
+//        int yearNow = cal.get(Calendar.YEAR);  //当前年份
+//        int monthNow = cal.get(Calendar.MONTH);  //当前月份
+//        int dayOfMonthNow = cal.get(Calendar.DAY_OF_MONTH); //当前日期
+//        cal.setTime(birthDay);
+//        int yearBirth = cal.get(Calendar.YEAR);
+//        int monthBirth = cal.get(Calendar.MONTH);
+//        int dayOfMonthBirth = cal.get(Calendar.DAY_OF_MONTH);
+//        int age = yearNow - yearBirth;   //计算整岁数
+//        if (monthNow <= monthBirth) {
+//            if (monthNow == monthBirth) {
+//                if (dayOfMonthNow < dayOfMonthBirth) age--;//当前日期在生日之前，年龄减一
+//            }else{
+//                age--;//当前月份在生日之前，年龄减一
+//            } } return age; }
+//    private int  age = setAge(getBirthTime());
+//    public  int getAge(){
+//        return  age;
+//    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -151,6 +186,8 @@ public class HosDoc extends BaseEntity
             .append("updateBy", getUpdateBy())
             .append("updateTime", getUpdateTime())
             .append("remark", getRemark())
+                .append("hosAdo",getHosAdo())
+//                .append("age",getAge())
             .toString();
     }
 }

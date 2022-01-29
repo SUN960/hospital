@@ -49,7 +49,17 @@ public class HosDuty extends BaseEntity
     @Excel(name = "值班状态", readConverterExp = "0=正常,1=停用")
     private String status;
 
-    public void setDutyId(Long dutyId) 
+    private HosDoc hosDoc;
+
+    public void setHosDoc(HosDoc hosDoc) {
+        this.hosDoc = hosDoc;
+    }
+
+    public HosDoc getHosDoc() {
+        return hosDoc;
+    }
+
+    public void setDutyId(Long dutyId)
     {
         this.dutyId = dutyId;
     }
@@ -148,6 +158,7 @@ public class HosDuty extends BaseEntity
             .append("updateBy", getUpdateBy())
             .append("updateTime", getUpdateTime())
             .append("remark", getRemark())
+                .append("hosDoc",getHosDoc())
             .toString();
     }
 }

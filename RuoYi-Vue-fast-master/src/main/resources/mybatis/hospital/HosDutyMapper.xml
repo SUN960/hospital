@@ -19,10 +19,36 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateBy"    column="update_by"    />
         <result property="updateTime"    column="update_time"    />
         <result property="remark"    column="remark"    />
+        <association property="hosDoc"    column="doc_id" javaType="HosDoc" resultMap="docResult" />
+    </resultMap>
+
+    <resultMap type="HosDoc" id="docResult">
+        <result property="docId"    column="doc_id"    />
+        <result property="docName"    column="doc_name"    />
+        <result property="sex"    column="sex"    />
+        <result property="birthTime"    column="birth_time"    />
+        <result property="email"    column="email"    />
+        <result property="phonenumber"    column="phonenumber"    />
+        <result property="adoId"    column="ado_id"    />
+        <result property="orderNum"    column="order_num"    />
+        <association property="hosAdo"    column="ado_id" javaType="HosAdo" resultMap="adoResult" />
+    </resultMap>
+
+    <resultMap type="HosAdo" id="adoResult">
+        <result property="adoId"    column="ado_id"    />
+        <result property="adoName"    column="ado_name"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="leader"    column="leader"    />
+        <result property="phone"    column="phone"    />
+        <result property="adress"    column="adress"    />
+
     </resultMap>
 
     <sql id="selectHosDutyVo">
-        select duty_id, ado_id, doc_id, order_num, phone, duty_time, begin_time, end_time, status, create_by, create_time, update_by, update_time, remark from hos_duty
+        select d1.*,d2.*,a.*
+        from hos_duty d1
+        left join hos_doc d2 on d1.doc_id=d2.doc_id
+        left join hos_ado a on a.ado_id=d2.ado_id
     </sql>
 
     <select id="selectHosDutyList" parameterType="HosDuty" resultMap="HosDutyResult">
@@ -102,7 +128,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteHosDutyByIds" parameterType="String">
-        delete from hos_duty where duty_id in 
+        delete from hos_duty where duty_id in
         <foreach item="dutyId" collection="array" open="(" separator="," close=")">
             #{dutyId}
         </foreach>

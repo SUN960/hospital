@@ -91,7 +91,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteHosInfoByIds" parameterType="String">
-        delete from hos_info where appoint_id in 
+        delete from hos_info where appoint_id in
         <foreach item="appointId" collection="array" open="(" separator="," close=")">
             #{appointId}
         </foreach>

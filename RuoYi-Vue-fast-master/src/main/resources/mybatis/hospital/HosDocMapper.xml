@@ -19,10 +19,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateBy"    column="update_by"    />
         <result property="updateTime"    column="update_time"    />
         <result property="remark"    column="remark"    />
+        <association property="hosAdo"    column="ado_id" javaType="HosAdo" resultMap="adoResult" />
+    </resultMap>
+
+    <resultMap type="HosAdo" id="adoResult">
+        <result property="adoId"    column="ado_id"    />
+        <result property="adoName"    column="ado_name"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="leader"    column="leader"    />
+        <result property="phone"    column="phone"    />
+        <result property="adress"    column="adress"    />
+
     </resultMap>
 
     <sql id="selectHosDocVo">
-        select doc_id, doc_name, sex, birth_time, email, phonenumber, ado_id, order_num, status, create_by, create_time, update_by, update_time, remark from hos_doc
+        select d.*,a.*
+        from hos_doc d
+        left join hos_ado a on  d.ado_id=a.ado_id
     </sql>
 
     <select id="selectHosDocList" parameterType="HosDoc" resultMap="HosDocResult">
@@ -101,7 +114,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteHosDocByIds" parameterType="String">
-        delete from hos_doc where doc_id in 
+        delete from hos_doc where doc_id in
         <foreach item="docId" collection="array" open="(" separator="," close=")">
             #{docId}
         </foreach>
