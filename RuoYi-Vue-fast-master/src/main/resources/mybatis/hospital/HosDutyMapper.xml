@@ -54,13 +54,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectHosDutyList" parameterType="HosDuty" resultMap="HosDutyResult">
         <include refid="selectHosDutyVo"/>
         <where>  
-            <if test="adoId != null "> and ado_id = #{adoId}</if>
-            <if test="docId != null "> and doc_id = #{docId}</if>
-            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
-            <if test="dutyTime != null "> and duty_time = #{dutyTime}</if>
-            <if test="beginTime != null  and beginTime != ''"> and begin_time = #{beginTime}</if>
-            <if test="endTime != null  and endTime != ''"> and end_time = #{endTime}</if>
-            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="adoId != null "> and d1.ado_id = #{adoId}</if>
+            <if test="docId != null "> and d1.doc_id = #{docId}</if>
+            <if test="phone != null  and phone != ''"> and d1.phone = #{phone}</if>
+            <if test="dutyTime != null "> and d1.duty_time = #{dutyTime}</if>
+            <if test="beginTime != null  and beginTime != ''"> and d1.begin_time = #{beginTime}</if>
+            <if test="endTime != null  and endTime != ''"> and d1.end_time = #{endTime}</if>
+            <if test="status != null  and status != ''"> and d1.status = #{status}</if>
         </where>
     </select>
     

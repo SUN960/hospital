@@ -36,11 +36,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectHosInfoList" parameterType="HosInfo" resultMap="HosInfoResult">
         <include refid="selectHosInfoVo"/>
         <where>  
-            <if test="userId != null "> and user_id = #{userId}</if>
-            <if test="docId != null "> and doc_id = #{docId}</if>
-            <if test="dateTime != null "> and date_time = #{dateTime}</if>
-            <if test="illSituation != null  and illSituation != ''"> and ill_situation = #{illSituation}</if>
-            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="userId != null "> and i.user_id = #{userId}</if>
+            <if test="docId != null "> and i.doc_id = #{docId}</if>
+            <if test="dateTime != null "> and i.date_time = #{dateTime}</if>
+            <if test="illSituation != null  and illSituation != ''"> and i.ill_situation = #{illSituation}</if>
+            <if test="status != null  and status != ''"> and i.status = #{status}</if>
         </where>
     </select>
     

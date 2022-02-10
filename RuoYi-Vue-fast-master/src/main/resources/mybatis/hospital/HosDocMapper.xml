@@ -42,19 +42,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectHosDocList" parameterType="HosDoc" resultMap="HosDocResult">
         <include refid="selectHosDocVo"/>
         <where>  
-            <if test="docName != null  and docName != ''"> and doc_name like concat('%', #{docName}, '%')</if>
-            <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
-            <if test="prot != null  and prot != ''"> and prot = #{prot}</if>
-            <if test="email != null  and email != ''"> and email = #{email}</if>
-            <if test="phonenumber != null  and phonenumber != ''"> and phonenumber = #{phonenumber}</if>
-            <if test="adoId != null "> and ado_id = #{adoId}</if>
-            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="docName != null  and docName != ''"> and d.doc_name like concat('%', #{docName}, '%')</if>
+            <if test="sex != null  and sex != ''"> and d.sex = #{sex}</if>
+            <if test="prot != null  and prot != ''"> and d.prot = #{prot}</if>
+            <if test="email != null  and email != ''"> and d.email = #{email}</if>
+            <if test="phonenumber != null  and phonenumber != ''"> and d.phonenumber = #{phonenumber}</if>
+            <if test="adoId != null "> and (d.ado_id = #{adoId} OR d.ado_id IN ( SELECT a.ado_id FROM hos_ado a WHERE find_in_set(#{adoId}, ancestors) ))</if>
+            <if test="status != null  and status != ''"> and d.status = #{status}</if>
         </where>
     </select>
     
     <select id="selectHosDocById" parameterType="Long" resultMap="HosDocResult">
         <include refid="selectHosDocVo"/>
-        where doc_id = #{docId}
+        where d.doc_id = #{docId}
     </select>
         
     <insert id="insertHosDoc" parameterType="HosDoc" useGeneratedKeys="true" keyProperty="docId">
