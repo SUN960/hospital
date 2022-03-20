@@ -1,12 +1,19 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="科室名称" prop="adoName">
         <el-input
           v-model="queryParams.adoName"
           placeholder="请输入科室名称"
           clearable
-          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="显示顺序" prop="orderNum">
+        <el-input
+          v-model="queryParams.orderNum"
+          placeholder="请输入显示顺序"
+          clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -15,21 +22,27 @@
           v-model="queryParams.leader"
           placeholder="请输入负责人"
           clearable
-          size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="地址" prop="adress">
+      <el-form-item label="联系电话" prop="phone">
         <el-input
-          v-model="queryParams.adress"
+          v-model="queryParams.phone"
+          placeholder="请输入联系电话"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="地址" prop="address">
+        <el-input
+          v-model="queryParams.address"
           placeholder="请输入地址"
           clearable
-          size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="科室状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择科室状态" clearable size="small">
+        <el-select v-model="queryParams.status" placeholder="请选择科室状态" clearable>
           <el-option
             v-for="dict in dict.type.sys_normal_disable"
             :key="dict.value"
@@ -94,14 +107,16 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="科室id" align="center" prop="adoId" />
       <el-table-column label="科室名称" align="center" prop="adoName" />
+      <el-table-column label="显示顺序" align="center" prop="orderNum" />
       <el-table-column label="负责人" align="center" prop="leader" />
       <el-table-column label="联系电话" align="center" prop="phone" />
-      <el-table-column label="地址" align="center" prop="adress" />
+      <el-table-column label="地址" align="center" prop="address" />
       <el-table-column label="科室状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
         </template>
       </el-table-column>
+      <el-table-column label="备注" align="center" prop="remark"  show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -145,8 +160,8 @@
         <el-form-item label="联系电话" prop="phone">
           <el-input v-model="form.phone" placeholder="请输入联系电话" />
         </el-form-item>
-        <el-form-item label="地址" prop="adress">
-          <el-input v-model="form.adress" placeholder="请输入地址" />
+        <el-form-item label="地址" prop="address">
+          <el-input v-model="form.address" placeholder="请输入地址" />
         </el-form-item>
         <el-form-item label="科室状态">
           <el-radio-group v-model="form.status">
@@ -156,6 +171,9 @@
 :label="dict.value"
             >{{dict.label}}</el-radio>
           </el-radio-group>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -197,8 +215,10 @@ export default {
         pageNum: 1,
         pageSize: 10,
         adoName: null,
+        orderNum: null,
         leader: null,
-        adress: null,
+        phone: null,
+        address: null,
         status: null,
       },
       // 表单参数
@@ -234,12 +254,13 @@ export default {
         orderNum: null,
         leader: null,
         phone: null,
-        adress: null,
+        address: null,
         status: "0",
         createBy: null,
         createTime: null,
         updateBy: null,
-        updateTime: null
+        updateTime: null,
+        remark: null
       };
       this.resetForm("form");
     },

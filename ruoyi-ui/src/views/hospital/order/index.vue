@@ -1,25 +1,56 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="账号" prop="userId">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="用户账号" prop="userId">
         <el-input
           v-model="queryParams.userId"
-          placeholder="请输入账号"
+          placeholder="请输入用户账号"
           clearable
-          size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="日期" prop="date">
-        <el-date-picker clearable size="small"
+        <el-date-picker clearable
           v-model="queryParams.date"
           type="date"
           value-format="yyyy-MM-dd"
-          placeholder="选择日期">
+          placeholder="请选择日期">
         </el-date-picker>
       </el-form-item>
+      <el-form-item label="挂号费用" prop="cost">
+        <el-input
+          v-model="queryParams.cost"
+          placeholder="请输入挂号费用"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="政策减免" prop="policy">
+        <el-input
+          v-model="queryParams.policy"
+          placeholder="请输入政策减免"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="其它费用" prop="otherCost">
+        <el-input
+          v-model="queryParams.otherCost"
+          placeholder="请输入其它费用"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="总费用" prop="totalCost">
+        <el-input
+          v-model="queryParams.totalCost"
+          placeholder="请输入总费用"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="支付状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择部门状态" clearable size="small">
+        <el-select v-model="queryParams.status" placeholder="请选择支付状态" clearable>
           <el-option
             v-for="dict in dict.type.hos_pay"
             :key="dict.value"
@@ -84,9 +115,9 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="订单编号" align="center" prop="orderId" />
       <el-table-column label="用户账号" align="center" prop="userId" />
-      <el-table-column label="时间" align="center" prop="date" width="180">
+      <el-table-column label="日期" align="center" prop="date" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.date, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
+          <span>{{ parseTime(scope.row.date, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="挂号费用" align="center" prop="cost" />
@@ -130,8 +161,16 @@
     <!-- 添加或修改预约订单对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="账号" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入账号" />
+        <el-form-item label="用户账号" prop="userId">
+          <el-input v-model="form.userId" placeholder="请输入用户账号" />
+        </el-form-item>
+        <el-form-item label="日期" prop="date">
+          <el-date-picker clearable
+            v-model="form.date"
+            type="date"
+            value-format="yyyy-MM-dd"
+            placeholder="请选择日期">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="挂号费用" prop="cost">
           <el-input v-model="form.cost" placeholder="请输入挂号费用" />
@@ -145,7 +184,7 @@
         <el-form-item label="总费用" prop="totalCost">
           <el-input v-model="form.totalCost" placeholder="请输入总费用" />
         </el-form-item>
-        <el-form-item label="部门状态">
+        <el-form-item label="支付状态">
           <el-radio-group v-model="form.status">
             <el-radio
               v-for="dict in dict.type.hos_pay"
@@ -156,6 +195,9 @@
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="值班号" prop="dutyId">
+          <el-input v-model="form.dutyId" placeholder="请输入值班号" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -198,6 +240,10 @@ export default {
         pageSize: 10,
         userId: null,
         date: null,
+        cost: null,
+        policy: null,
+        otherCost: null,
+        totalCost: null,
         status: null,
       },
       // 表单参数
@@ -205,7 +251,7 @@ export default {
       // 表单校验
       rules: {
         userId: [
-          { required: true, message: "账号不能为空", trigger: "blur" }
+          { required: true, message: "用户账号不能为空", trigger: "blur" }
         ],
         date: [
           { required: true, message: "日期不能为空", trigger: "blur" }
@@ -252,7 +298,8 @@ export default {
         createTime: null,
         updateBy: null,
         updateTime: null,
-        remark: null
+        remark: null,
+        dutyId: null
       };
       this.resetForm("form");
     },

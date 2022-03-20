@@ -1,17 +1,24 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="姓名" prop="docName">
         <el-input
           v-model="queryParams.docName"
           placeholder="请输入姓名"
           clearable
-          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="职称" prop="prot">
+        <el-input
+          v-model="queryParams.prot"
+          placeholder="请输入职称"
+          clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="用户性别" prop="sex">
-        <el-select v-model="queryParams.sex" placeholder="请选择用户性别" clearable size="small">
+        <el-select v-model="queryParams.sex" placeholder="请选择用户性别" clearable>
           <el-option
             v-for="dict in dict.type.sys_user_sex"
             :key="dict.value"
@@ -20,19 +27,28 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="科室名称" prop="adoId">
+      <el-form-item label="出生日期" prop="birthTime">
         <el-input
-          v-model="queryParams.adoId"
-          placeholder="请输入科室名称"
+          v-model="queryParams.birthTime"
+          placeholder="请输入出生日期"
           clearable
-          size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="部门状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择部门状态" clearable size="small">
+      <el-form-item label="科室名称" prop="adoId">
+        <el-select v-model="queryParams.adoId" placeholder="请选择科室名称" clearable>
           <el-option
-            v-for="dict in dict.type.sys_normal_disable"
+            v-for="ado in adoList"
+            :key="ado.adoId"
+            :label="ado.adoName"
+            :value="ado.adoId"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="医生状态" prop="status">
+        <el-select v-model="queryParams.status" placeholder="请选择医生状态" clearable>
+          <el-option
+            v-for="dict in dict.type.hos_doc_status"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
@@ -95,22 +111,22 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="工作证号" align="center" prop="docId" />
       <el-table-column label="姓名" align="center" prop="docName" />
+      <el-table-column label="职称" align="center" prop="prot" />
       <el-table-column label="用户性别" align="center" prop="sex">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_user_sex" :value="scope.row.sex"/>
         </template>
       </el-table-column>
-      <el-table-column label="职称" align="center" prop="prot" />
       <el-table-column label="出生日期" align="center" prop="birthTime" />
       <el-table-column label="邮箱" align="center" prop="email" />
       <el-table-column label="手机号码" align="center" prop="phonenumber" />
       <el-table-column label="科室名称" align="center" prop="hosAdo.adoName" />
-      <el-table-column label="部门状态" align="center" prop="status">
+      <el-table-column label="医生状态" align="center" prop="status">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
+          <dict-tag :options="dict.type.hos_doc_status" :value="scope.row.status"/>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" />
+      <el-table-column label="备注" align="center" prop="remark"  show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -145,6 +161,12 @@
         <el-form-item label="姓名" prop="docName">
           <el-input v-model="form.docName" placeholder="请输入姓名" />
         </el-form-item>
+        <el-form-item label="图像地址" prop="avatar">
+          <el-input v-model="form.avatar" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="职称" prop="prot">
+          <el-input v-model="form.prot" placeholder="请输入职称" />
+        </el-form-item>
         <el-form-item label="用户性别" prop="sex">
           <el-select v-model="form.sex" placeholder="请选择用户性别">
             <el-option
@@ -154,13 +176,9 @@
 :value="dict.value"
             ></el-option>
           </el-select>
-          </el-form-item>
-
-          <el-form-item label="职称" prop="prot">
-          <el-input v-model="form.prot" placeholder="请输入职称" />
         </el-form-item>
         <el-form-item label="出生日期" prop="birthTime">
-          <el-input v-model="form.birthTime" placeholder="请输入年龄" />
+          <el-input v-model="form.birthTime" placeholder="请输入出生日期" />
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="form.email" placeholder="请输入邮箱" />
@@ -169,15 +187,22 @@
           <el-input v-model="form.phonenumber" placeholder="请输入手机号码" />
         </el-form-item>
         <el-form-item label="科室名称" prop="adoId">
-          <el-input v-model="form.adoId" placeholder="请输入科室名称" />
+         <el-select v-model="form.adoId" placeholder="请选择科室名称" clearable>
+          <el-option
+            v-for="ado in adoList"
+            :key="ado.adoId"
+            :label="ado.adoName"
+            :value="ado.adoId"
+          />
+        </el-select>
         </el-form-item>
         <el-form-item label="显示顺序" prop="orderNum">
           <el-input v-model="form.orderNum" placeholder="请输入显示顺序" />
         </el-form-item>
-        <el-form-item label="部门状态">
+        <el-form-item label="医生状态">
           <el-radio-group v-model="form.status">
             <el-radio
-              v-for="dict in dict.type.sys_normal_disable"
+              v-for="dict in dict.type.hos_doc_status"
               :key="dict.value"
 :label="dict.value"
             >{{dict.label}}</el-radio>
@@ -197,10 +222,10 @@
 
 <script>
 import { listDoc, getDoc, delDoc, addDoc, updateDoc } from "@/api/hospital/doc";
-
+import { listAdo } from "../../../api/hospital/ado";
 export default {
   name: "Doc",
-  dicts: ['sys_user_sex', 'sys_normal_disable'],
+  dicts: ['sys_user_sex', 'hos_doc_status'],
   data() {
     return {
       // 遮罩层
@@ -217,6 +242,7 @@ export default {
       total: 0,
       // 医生表格数据
       docList: [],
+      adoList:[],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -226,7 +252,9 @@ export default {
         pageNum: 1,
         pageSize: 10,
         docName: null,
+        prot: null,
         sex: null,
+        birthTime: null,
         adoId: null,
         status: null,
       },
@@ -237,11 +265,27 @@ export default {
         docName: [
           { required: true, message: "姓名不能为空", trigger: "blur" }
         ],
+        prot: [
+          { required: true, message: "职称不能为空", trigger: "blur" }
+        ],
+        sex: [
+          { required: true, message: "用户性别不能为空", trigger: "change" }
+        ],
+        birthTime: [
+          { required: true, message: "出生日期不能为空", trigger: "blur" }
+        ],
+        phonenumber: [
+          { required: true, message: "手机号码不能为空", trigger: "blur" }
+        ],
+        adoId: [
+          { required: true, message: "科室ID不能为空", trigger: "blur" }
+        ],
       }
     };
   },
   created() {
     this.getList();
+    this.getList2();
   },
   methods: {
     /** 查询医生列表 */
@@ -251,6 +295,12 @@ export default {
         this.docList = response.rows;
         this.total = response.total;
         this.loading = false;
+      });
+    },
+    getList2(){
+      listAdo(this.queryParams).then(response => {
+        this.adoList = response.rows;
+        
       });
     },
     // 取消按钮
@@ -263,8 +313,9 @@ export default {
       this.form = {
         docId: null,
         docName: null,
-        sex: null,
+        avatar: null,
         prot: null,
+        sex: null,
         birthTime: null,
         email: null,
         phonenumber: null,

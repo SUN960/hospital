@@ -1,37 +1,60 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="用户账号" prop="userName">
         <el-input
           v-model="queryParams.userName"
           placeholder="请输入用户账号"
           clearable
-          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="真实姓名" prop="realName">
+        <el-input
+          v-model="queryParams.realName"
+          placeholder="请输入真实姓名"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="用户邮箱" prop="email">
+        <el-input
+          v-model="queryParams.email"
+          placeholder="请输入用户邮箱"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="手机号码" prop="phonenumber">
+        <el-input
+          v-model="queryParams.phonenumber"
+          placeholder="请输入手机号码"
+          clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="用户性别" prop="sex">
-        <el-select v-model="queryParams.sex" placeholder="请选择用户性别" clearable size="small">
+        <el-select v-model="queryParams.sex" placeholder="请选择用户性别" clearable>
           <el-option
-            v-for="dict in sexOptions"
-            :key="dict.dictValue"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
+            v-for="dict in dict.type.sys_user_sex"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
           />
         </el-select>
       </el-form-item>
       <el-form-item label="帐号状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择帐号状态" clearable size="small">
+        <el-select v-model="queryParams.status" placeholder="请选择帐号状态" clearable>
           <el-option
-            v-for="dict in statusOptions"
-            :key="dict.dictValue"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
+            v-for="dict in dict.type.sys_normal_disable"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
           />
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="cyan" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
@@ -40,6 +63,7 @@
       <el-col :span="1.5">
         <el-button
           type="primary"
+          plain
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
@@ -49,6 +73,7 @@
       <el-col :span="1.5">
         <el-button
           type="success"
+          plain
           icon="el-icon-edit"
           size="mini"
           :disabled="single"
@@ -59,6 +84,7 @@
       <el-col :span="1.5">
         <el-button
           type="danger"
+          plain
           icon="el-icon-delete"
           size="mini"
           :disabled="multiple"
@@ -69,19 +95,21 @@
       <el-col :span="1.5">
         <el-button
           type="warning"
+          plain
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
           v-hasPermi="['hospital:user:export']"
         >导出</el-button>
       </el-col>
-	  <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="用户ID" align="center" prop="userId" />
       <el-table-column label="用户账号" align="center" prop="userName" />
+      <el-table-column label="真实姓名" align="center" prop="realName" />
       <el-table-column label="用户邮箱" align="center" prop="email" />
       <el-table-column label="手机号码" align="center" prop="phonenumber" />
       <el-table-column label="用户性别" align="center" prop="sex">
@@ -89,14 +117,9 @@
           <dict-tag :options="dict.type.sys_user_sex" :value="scope.row.sex"/>
         </template>
       </el-table-column>
-     <el-table-column label="用户状态" align="center" prop="status">
+      <el-table-column label="帐号状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="最后登录时间" align="center" prop="loginDate" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.loginDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
@@ -149,27 +172,28 @@
         <el-form-item label="用户性别" prop="sex">
           <el-select v-model="form.sex" placeholder="请选择用户性别">
             <el-option
-              v-for="dict in sexOptions"
-              :key="dict.dictValue"
-              :label="dict.dictLabel"
-              :value="dict.dictValue"
+              v-for="dict in dict.type.sys_user_sex"
+              :key="dict.value"
+              :label="dict.label"
+:value="dict.value"
             ></el-option>
           </el-select>
         </el-form-item>
-      
         <el-form-item label="密码" prop="password">
           <el-input v-model="form.password" placeholder="请输入密码" />
         </el-form-item>
         <el-form-item label="帐号状态">
           <el-radio-group v-model="form.status">
             <el-radio
-              v-for="dict in statusOptions"
-              :key="dict.dictValue"
-              :label="dict.dictValue"
-            >{{dict.dictLabel}}</el-radio>
+              v-for="dict in dict.type.sys_normal_disable"
+              :key="dict.value"
+:label="dict.value"
+            >{{dict.label}}</el-radio>
           </el-radio-group>
         </el-form-item>
-      
+        <el-form-item label="删除标志" prop="delFlag">
+          <el-input v-model="form.delFlag" placeholder="请输入删除标志" />
+        </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
         </el-form-item>
@@ -183,13 +207,11 @@
 </template>
 
 <script>
-import { listUser, getUser, delUser, addUser, updateUser, exportUser } from "@/api/hospital/user";
+import { listUser, getUser, delUser, addUser, updateUser } from "@/api/hospital/user";
 
 export default {
   name: "User",
   dicts: ['sys_user_sex', 'sys_normal_disable'],
-  components: {
-  },
   data() {
     return {
       // 遮罩层
@@ -210,15 +232,14 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
-      // 用户性别字典
-      sexOptions: [],
-      // 帐号状态字典
-      statusOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
         userName: null,
+        realName: null,
+        email: null,
+        phonenumber: null,
         sex: null,
         status: null,
       },
@@ -235,20 +256,11 @@ export default {
         identityId: [
           { required: true, message: "身份证号不能为空", trigger: "blur" }
         ],
-        password: [
-            {require: true, message: "密码不能为空", trigger: "blur"}
-        ]
       }
     };
   },
   created() {
     this.getList();
-    this.getDicts("sys_user_sex").then(response => {
-      this.sexOptions = response.data;
-    });
-    this.getDicts("sys_normal_disable").then(response => {
-      this.statusOptions = response.data;
-    });
   },
   methods: {
     /** 查询用户信息列表 */
@@ -343,29 +355,18 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const userIds = row.userId || this.ids;
-      this.$confirm('是否确认删除用户信息编号为"' + userIds + '"的数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return delUser(userIds);
-        }).then(() => {
-          this.getList();
-          this.msgSuccess("删除成功");
-        })
+      this.$modal.confirm('是否确认删除用户信息编号为"' + userIds + '"的数据项？').then(function() {
+        return delUser(userIds);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("删除成功");
+      }).catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {
-      const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有用户信息数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return exportUser(queryParams);
-        }).then(response => {
-          this.download(response.msg);
-        })
+      this.download('hospital/user/export', {
+        ...this.queryParams
+      }, `user_${new Date().getTime()}.xlsx`)
     }
   }
 };

@@ -42,12 +42,3 @@ export function delUser(userId) {
     method: 'delete'
   })
 }
-
-// 导出用户信息
-export function exportUser(query) {
-  return request({
-    url: '/hospital/user/export',
-    method: 'get',
-    params: query
-  })
-}

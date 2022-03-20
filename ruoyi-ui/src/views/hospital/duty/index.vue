@@ -1,37 +1,40 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="科室名称" prop="adoId">
-        <el-input
-          v-model="queryParams.adoId"
-          placeholder="请输入科室名称"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="医生名称" prop="docId">
-        <el-input
-          v-model="queryParams.docId"
-          placeholder="请输入医生名称"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.docId" placeholder="请选择医生" clearable>
+          <el-option
+            v-for="item in docList"
+            :key="item.docId"
+            :label="item.docName"
+            :value="item.docId"
+          />
+        </el-select>
       </el-form-item>
-      <el-form-item label="联系电话" prop="phone">
-        <el-input
-          v-model="queryParams.phone"
-          placeholder="请输入联系电话"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="值班日期" prop="dutyTime">
+        <el-select v-model="queryParams.dutyTime" placeholder="请选择值班日期" clearable>
+          <el-option
+            v-for="dict in dict.type.time_week"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="值班时间" prop="duringTime">
+        <el-select v-model="queryParams.duringTime" placeholder="请选择值班时间" clearable>
+          <el-option
+            v-for="dict in dict.type.hos_change_day"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="值班状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择值班状态" clearable size="small">
+        <el-select v-model="queryParams.status" placeholder="请选择值班状态" clearable>
           <el-option
-            v-for="dict in dict.type.sys_normal_disable"
+            v-for="dict in dict.type.hos_doc_status"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
@@ -93,23 +96,21 @@
     <el-table v-loading="loading" :data="dutyList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="值班编号" align="center" prop="dutyId" />
-      <el-table-column label="科室名称" align="center" prop="hosDoc.hosAdo.adoName" />
       <el-table-column label="医生名称" align="center" prop="hosDoc.docName" />
-      <el-table-column label="联系电话" align="center" prop="hosDoc.phonenumber" />
+      <el-table-column label="预约人数" align="center" prop="orderNum" />
       <el-table-column label="值班日期" align="center" prop="dutyTime">
-        <!-- <template slot-scope="scope">
-          <dict-tag :options="dict.type.time_week" :value="scope.row.dutyTime ? scope.row.dutyTime.split(',') : []"/> -->
-        <!-- </template> -->
-<template slot-scope="scope">
+        <template slot-scope="scope">
           <dict-tag :options="dict.type.time_week" :value="scope.row.dutyTime"/>
         </template>
-
       </el-table-column>
-      <el-table-column label="开始时间" align="center" prop="beginTime" />
-      <el-table-column label="结束时间" align="center" prop="endTime" />
+      <el-table-column label="值班时间" align="center" prop="duringTime">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.hos_change_day" :value="scope.row.duringTime"/>
+        </template>
+      </el-table-column>
       <el-table-column label="值班状态" align="center" prop="status">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
+          <dict-tag :options="dict.type.hos_doc_status" :value="scope.row.status"/>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
@@ -144,43 +145,45 @@
     <!-- 添加或修改值班对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-       
-        <el-form-item label="医生名称" prop="docId">
-          <el-input v-model="form.docId" placeholder="请输入医生名称" />
+        <el-form-item label="医生ID" prop="docId">
+          <el-select v-model="form.docId" placeholder="请选择医生" clearable>
+          <el-option
+            v-for="item in docList"
+            :key="item.docId"
+            :label="item.docName"
+            :value="item.docId"
+          />
+        </el-select>
         </el-form-item>
-        <el-form-item label="显示顺序" prop="orderNum">
+        <el-form-item label="预约人数" prop="orderNum" >
           <el-input v-model="form.orderNum" placeholder="请输入显示顺序" />
         </el-form-item>
-        
         <el-form-item label="值班日期" prop="dutyTime">
-          <!-- <el-radio-group v-model="form.dutyTime">
-            <el-radio
+          <el-select v-model="form.dutyTime" placeholder="请选择值班日期">
+            <el-option
               v-for="dict in dict.type.time_week"
               :key="dict.value"
-              :label="dict.value"
-            >{{dict.label}}</el-radio>
-          </el-radio-group> -->
-          <el-checkbox-group v-model="form.dutyTime">
-            <el-checkbox
-              v-for="dict in dict.type.time_week"
+              :label="dict.label"
+:value="parseInt(dict.value)"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="值班时间" prop="duringTime">
+          <el-select v-model="form.duringTime" placeholder="请选择值班时间">
+            <el-option
+              v-for="dict in dict.type.hos_change_day"
               :key="dict.value"
-              :label="dict.value">
-              {{dict.label}}
-            </el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="开始时间" prop="beginTime">
-          <el-input v-model="form.beginTime" placeholder="请输入开始时间" />
-        </el-form-item>
-        <el-form-item label="结束时间" prop="endTime">
-          <el-input v-model="form.endTime" placeholder="请输入结束时间" />
+              :label="dict.label"
+:value="dict.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="值班状态">
           <el-radio-group v-model="form.status">
             <el-radio
-              v-for="dict in dict.type.sys_normal_disable"
+              v-for="dict in dict.type.hos_doc_status"
               :key="dict.value"
-:label="dict.value"
+              :label="dict.value"
             >{{dict.label}}</el-radio>
           </el-radio-group>
         </el-form-item>
@@ -198,10 +201,10 @@
 
 <script>
 import { listDuty, getDuty, delDuty, addDuty, updateDuty } from "@/api/hospital/duty";
-
+import { listDoc } from "@/api/hospital/doc";
 export default {
   name: "Duty",
-  dicts: ['time_week', 'sys_normal_disable'],
+  dicts: ['time_week', 'hos_change_day', 'hos_doc_status'],
   data() {
     return {
       // 遮罩层
@@ -218,6 +221,7 @@ export default {
       total: 0,
       // 值班表格数据
       dutyList: [],
+      docList:[],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -226,30 +230,23 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        adoId: null,
         docId: null,
-        phone: null,
         dutyTime: null,
+        duringTime: null,
         status: null,
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        adoId: [
-          { required: true, message: "科室名称不能为空", trigger: "blur" }
-        ],
         docId: [
-          { required: true, message: "医生名称不能为空", trigger: "blur" }
+          { required: true, message: "医生ID不能为空", trigger: "blur" }
         ],
         dutyTime: [
-          { required: true, message: "值班日期不能为空", trigger: "blur" }
+          { required: true, message: "值班日期不能为空", trigger: "change" }
         ],
-        beginTime: [
-          { required: true, message: "开始时间不能为空", trigger: "blur" }
-        ],
-        endTime: [
-          { required: true, message: "结束时间不能为空", trigger: "blur" }
+        duringTime: [
+          { required: true, message: "值班时间不能为空", trigger: "change" }
         ],
         status: [
           { required: true, message: "值班状态不能为空", trigger: "blur" }
@@ -259,6 +256,7 @@ export default {
   },
   created() {
     this.getList();
+    this.getList2();
   },
   methods: {
     /** 查询值班列表 */
@@ -270,6 +268,12 @@ export default {
         this.loading = false;
       });
     },
+    getList2() {
+      this.loading = true;
+      listDoc(this.queryParams).then(response => {
+        this.docList = response.rows;
+      });
+    },
     // 取消按钮
     cancel() {
       this.open = false;
@@ -279,13 +283,10 @@ export default {
     reset() {
       this.form = {
         dutyId: null,
-        adoId: null,
         docId: null,
         orderNum: null,
-        phone: null,
-        dutyTime: [],
-        beginTime: null,
-        endTime: null,
+        dutyTime: null,
+        duringTime: null,
         status: "0",
         createBy: null,
         createTime: null,
@@ -323,7 +324,6 @@ export default {
       const dutyId = row.dutyId || this.ids
       getDuty(dutyId).then(response => {
         this.form = response.data;
-        this.form.dutyTime = this.form.dutyTime.split(",");
         this.open = true;
         this.title = "修改值班";
       });
@@ -332,7 +332,6 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          this.form.dutyTime = this.form.dutyTime.join(",");
           if (this.form.dutyId != null) {
             updateDuty(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hospital.mapper.HosDocMapper">
+    
+    <resultMap type="HosDoc" id="HosDocResult">
+        <result property="docId"    column="doc_id"    />
+        <result property="docName"    column="doc_name"    />
+        <result property="avatar"    column="avatar"    />
+        <result property="prot"    column="prot"    />
+        <result property="sex"    column="sex"    />
+        <result property="birthTime"    column="birth_time"    />
+        <result property="email"    column="email"    />
+        <result property="phonenumber"    column="phonenumber"    />
+        <result property="adoId"    column="ado_id"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <association property="hosAdo"    column="ado_id" javaType="HosAdo" resultMap="adoResult" />
+    </resultMap>
+
+    <resultMap type="HosAdo" id="adoResult">
+        <result property="adoId"    column="ado_id"    />
+        <result property="adoName"    column="ado_name"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="leader"    column="leader"    />
+        <result property="phone"    column="phone"    />
+        <result property="adress"    column="adress"    />
+
+    </resultMap>
+
+    <sql id="selectHosDocVo">
+        select d.*,a.*
+        from hos_doc d
+        left join hos_ado a on  d.ado_id=a.ado_id
+    </sql>
+
+    <select id="selectHosDocList" parameterType="HosDoc" resultMap="HosDocResult">
+        <include refid="selectHosDocVo"/>
+        <where>
+            <if test="docName != null  and docName != ''"> and d.doc_name like concat('%', #{docName}, '%')</if>
+            <if test="sex != null  and sex != ''"> and d.sex = #{sex}</if>
+            <if test="prot != null  and prot != ''"> and d.prot = #{prot}</if>
+            <if test="email != null  and email != ''"> and d.email = #{email}</if>
+            <if test="phonenumber != null  and phonenumber != ''"> and d.phonenumber = #{phonenumber}</if>
+            <if test="adoId != null "> and d.ado_id = #{adoId}</if>
+            <if test="status != null  and status != ''"> and d.status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectHosDocByDocId" parameterType="Long" resultMap="HosDocResult">
+        <include refid="selectHosDocVo"/>
+        where d.doc_id = #{docId}
+    </select>
+        
+    <insert id="insertHosDoc" parameterType="HosDoc" useGeneratedKeys="true" keyProperty="docId">
+        insert into hos_doc
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="docName != null and docName != ''">doc_name,</if>
+            <if test="avatar != null">avatar,</if>
+            <if test="prot != null and prot != ''">prot,</if>
+            <if test="sex != null and sex != ''">sex,</if>
+            <if test="birthTime != null and birthTime != ''">birth_time,</if>
+            <if test="email != null">email,</if>
+            <if test="phonenumber != null and phonenumber != ''">phonenumber,</if>
+            <if test="adoId != null">ado_id,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="docName != null and docName != ''">#{docName},</if>
+            <if test="avatar != null">#{avatar},</if>
+            <if test="prot != null and prot != ''">#{prot},</if>
+            <if test="sex != null and sex != ''">#{sex},</if>
+            <if test="birthTime != null and birthTime != ''">#{birthTime},</if>
+            <if test="email != null">#{email},</if>
+            <if test="phonenumber != null and phonenumber != ''">#{phonenumber},</if>
+            <if test="adoId != null">#{adoId},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHosDoc" parameterType="HosDoc">
+        update hos_doc
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="docName != null and docName != ''">doc_name = #{docName},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="prot != null and prot != ''">prot = #{prot},</if>
+            <if test="sex != null and sex != ''">sex = #{sex},</if>
+            <if test="birthTime != null and birthTime != ''">birth_time = #{birthTime},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="phonenumber != null and phonenumber != ''">phonenumber = #{phonenumber},</if>
+            <if test="adoId != null">ado_id = #{adoId},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where doc_id = #{docId}
+    </update>
+
+    <delete id="deleteHosDocByDocId" parameterType="Long">
+        delete from hos_doc where doc_id = #{docId}
+    </delete>
+
+    <delete id="deleteHosDocByDocIds" parameterType="String">
+        delete from hos_doc where doc_id in 
+        <foreach item="docId" collection="array" open="(" separator="," close=")">
+            #{docId}
+        </foreach>
+    </delete>
+</mapper>

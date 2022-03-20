@@ -1,26 +1,35 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="患者账号" prop="userId">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="用户账号" prop="userId">
         <el-input
           v-model="queryParams.userId"
-          placeholder="请输入患者账号"
+          placeholder="请输入用户账号"
           clearable
-          size="small"
           @keyup.enter.native="handleQuery"
         />
+      </el-form-item>
+      <el-form-item label="医生姓名" prop="docId">
+        <el-select v-model="queryParams.docId" placeholder="请选择医生" clearable>
+          <el-option
+            v-for="item in docList"
+            :key="item.docId"
+            :label="item.docName"
+            :value="item.docId"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="病情" prop="illSituation">
         <el-input
           v-model="queryParams.illSituation"
           placeholder="请输入病情"
           clearable
-          size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="预约状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择部门状态" clearable size="small">
+     
+      <el-form-item label="状态" prop="status">
+        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable>
           <el-option
             v-for="dict in dict.type.hos_appointment"
             :key="dict.value"
@@ -84,15 +93,13 @@
     <el-table v-loading="loading" :data="infoList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="预约编号" align="center" prop="appointId" />
-      <el-table-column label="患者账号" align="center" prop="userId" />
-      <el-table-column label="医生名称" align="center" prop="hosDoc.docName" />
-      <el-table-column label="病情" align="center" prop="illSituation" />
-      <el-table-column label="日期" align="center" prop="dateTime" />
-      <el-table-column label="开始时间 " align="center" prop="startTime" width="100">  
-      </el-table-column>
-      <el-table-column label="结束时间" align="center" prop="endTime" width="100">
-      </el-table-column>
-      <el-table-column label="预约状态" align="center" prop="status">
+      <el-table-column label="用户账号" align="center" prop="userId" />
+      <el-table-column label="医生姓名" align="center" prop="hosDoc.docName" />
+      <el-table-column label="病情" align="center" prop="illSituation" show-overflow-tooltip/>
+      <el-table-column label="预约日期" align="center" prop="dateTime" width="120"/>
+        
+      <el-table-column label="挂号号码" align="center" prop="number" />
+      <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.hos_appointment" :value="scope.row.status"/>
         </template>
@@ -129,32 +136,29 @@
     <!-- 添加或修改预约信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="患者账号" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入患者账号" />
+        <el-form-item label="用户账号" prop="userId">
+          <el-input v-model="form.userId" placeholder="请输入用户账号" />
         </el-form-item>
         <el-form-item label="医生名称" prop="docId">
-          <el-input v-model="form.docId" placeholder="请输入医生名称" />
+          <el-select v-model="form.docId" placeholder="请选择医生" clearable>
+          <el-option
+            v-for="item in docList"
+            :key="item.docId"
+            :label="item.docName"
+            :value="item.docId"
+          />
+        </el-select>
         </el-form-item>
         <el-form-item label="病情" prop="illSituation">
           <el-input v-model="form.illSituation" placeholder="请输入病情" />
         </el-form-item>
-        <el-form-item label="开始时间 " prop="startTime">
-          <el-date-picker clearable size="small"
-            v-model="form.startTime"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="选择开始时间 ">
-          </el-date-picker>
+        <el-form-item label="预约日期" prop="dateTime">
+          <el-input v-model="form.dataTime" placeholder="请输入时间YYYY/MM/DD AM or PM" />
         </el-form-item>
-        <el-form-item label="结束时间" prop="endTime">
-          <el-date-picker clearable size="small"
-            v-model="form.endTime"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="选择结束时间">
-          </el-date-picker>
+        <el-form-item label="挂号号码" prop="number">
+          <el-input v-model="form.number" placeholder="请输入挂号号码" />
         </el-form-item>
-        <el-form-item label="部门状态">
+        <el-form-item label="状态">
           <el-radio-group v-model="form.status">
             <el-radio
               v-for="dict in dict.type.hos_appointment"
@@ -165,6 +169,12 @@
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item label="值班id" prop="dutyId">
+          <el-input v-model="form.dutyId" placeholder="请输入值班id" />
+        </el-form-item>
+        <el-form-item label="结束时间" prop="endTime">
+          <el-input v-model="form.endTime" placeholder="请输入结束时间" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -177,7 +187,7 @@
 
 <script>
 import { listInfo, getInfo, delInfo, addInfo, updateInfo } from "@/api/hospital/info";
-
+import {listDoc} from "@/api/hospital/doc";
 export default {
   name: "Info",
   dicts: ['hos_appointment'],
@@ -197,6 +207,7 @@ export default {
       total: 0,
       // 预约信息表格数据
       infoList: [],
+      docList:[],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -206,7 +217,9 @@ export default {
         pageNum: 1,
         pageSize: 10,
         userId: null,
+        docId: null,
         illSituation: null,
+        dateTime: null,
         status: null,
       },
       // 表单参数
@@ -214,25 +227,26 @@ export default {
       // 表单校验
       rules: {
         userId: [
-          { required: true, message: "患者账号不能为空", trigger: "blur" }
+          { required: true, message: "用户账号不能为空", trigger: "blur" }
         ],
         docId: [
-          { required: true, message: "医生名称不能为空", trigger: "blur" }
+          { required: true, message: "医生id不能为空", trigger: "blur" }
         ],
         illSituation: [
           { required: true, message: "病情不能为空", trigger: "blur" }
         ],
-        startTime: [
-          { required: true, message: "开始时间 不能为空", trigger: "blur" }
+        dateTime: [
+          { required: true, message: "日期不能为空", trigger: "blur" }
         ],
-        endTime: [
-          { required: true, message: "结束时间不能为空", trigger: "blur" }
+        number: [
+          { required: true, message: "挂号号码不能为空", trigger: "blur" }
         ],
       }
     };
   },
   created() {
     this.getList();
+    this.getList2();
   },
   methods: {
     /** 查询预约信息列表 */
@@ -242,6 +256,12 @@ export default {
         this.infoList = response.rows;
         this.total = response.total;
         this.loading = false;
+      });
+    },getList2() {
+      this.loading = true;
+      listDoc(this.queryParams).then(response => {
+        this.docList = response.rows;
+      
       });
     },
     // 取消按钮
@@ -257,14 +277,15 @@ export default {
         docId: null,
         illSituation: null,
         dateTime: null,
-        startTime: null,
-        endTime: null,
+        number: null,
         status: "0",
         createBy: null,
         createTime: null,
         updateBy: null,
         updateTime: null,
-        remark: null
+        remark: null,
+        dutyId: null,
+        endTime: null
       };
       this.resetForm("form");
     },
