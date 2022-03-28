@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="医生名称" prop="docId">
+      <el-form-item label="医生名称" prop="docId" v-show="userRole">
         <el-select v-model="queryParams.docId" placeholder="请选择医生" clearable>
           <el-option
             v-for="item in docList"
@@ -222,6 +222,7 @@ export default {
       // 值班表格数据
       dutyList: [],
       docList:[],
+      userRole:true,
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -257,21 +258,34 @@ export default {
   created() {
     this.getList();
     this.getList2();
+    
   },
   methods: {
     /** 查询值班列表 */
     getList() {
       this.loading = true;
       listDuty(this.queryParams).then(response => {
-        this.dutyList = response.rows;
+        this.dutyList=response.rows
         this.total = response.total;
         this.loading = false;
       });
     },
     getList2() {
-      this.loading = true;
+       this.loading = true;
       listDoc(this.queryParams).then(response => {
-        this.docList = response.rows;
+      this.docList = response.rows;
+      const data=JSON.parse(sessionStorage.getItem("sessionObj")).data
+      const userName=data.split("\"")[3]
+      console.log(this.docList)
+      this.docList.forEach(element => {
+        console.log(element.docName)
+        console.log(element.docName === userName)
+      if(element.docName === userName){this.queryParams.docId = element.docId
+      console.log(this.queryParams.docId)
+      this.userRole=false
+      this.handleQuery()
+      }
+      });
       });
     },
     // 取消按钮

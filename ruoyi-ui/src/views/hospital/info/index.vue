@@ -9,7 +9,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="医生姓名" prop="docId">
+      <el-form-item label="医生姓名" prop="docId" v-show="userRole">
         <el-select v-model="queryParams.docId" placeholder="请选择医生" clearable>
           <el-option
             v-for="item in docList"
@@ -97,7 +97,6 @@
       <el-table-column label="医生姓名" align="center" prop="hosDoc.docName" />
       <el-table-column label="病情" align="center" prop="illSituation" show-overflow-tooltip/>
       <el-table-column label="预约日期" align="center" prop="dateTime" width="120"/>
-        
       <el-table-column label="挂号号码" align="center" prop="number" />
       <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
@@ -136,11 +135,11 @@
     <!-- 添加或修改预约信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="用户账号" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入用户账号" />
+        <el-form-item label="用户账号" prop="userId" >
+          <el-input v-model="form.userId" placeholder="请输入用户账号" disabled="true"/>
         </el-form-item>
         <el-form-item label="医生名称" prop="docId">
-          <el-select v-model="form.docId" placeholder="请选择医生" clearable>
+          <el-select v-model="form.docId" placeholder="请选择医生" clearable disabled="true">
           <el-option
             v-for="item in docList"
             :key="item.docId"
@@ -149,33 +148,28 @@
           />
         </el-select>
         </el-form-item>
-        <el-form-item label="病情" prop="illSituation">
+        <el-form-item label="病情" prop="illSituation" >
           <el-input v-model="form.illSituation" placeholder="请输入病情" />
         </el-form-item>
-        <el-form-item label="预约日期" prop="dateTime">
-          <el-input v-model="form.dataTime" placeholder="请输入时间YYYY/MM/DD AM or PM" />
+        <el-form-item label="预约日期" prop="dateTime" >
+          <el-input v-model="form.dateTime" placeholder="请输入时间YYYY/MM/DD AM or PM" disabled="true"/>
         </el-form-item>
-        <el-form-item label="挂号号码" prop="number">
-          <el-input v-model="form.number" placeholder="请输入挂号号码" />
+        <el-form-item label="挂号号码" prop="number" >
+          <el-input v-model="form.number" placeholder="请输入挂号号码" disabled="true"/>
         </el-form-item>
         <el-form-item label="状态">
           <el-radio-group v-model="form.status">
             <el-radio
               v-for="dict in dict.type.hos_appointment"
               :key="dict.value"
-:label="dict.value"
+              :label="dict.value"
             >{{dict.label}}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
         </el-form-item>
-        <el-form-item label="值班id" prop="dutyId">
-          <el-input v-model="form.dutyId" placeholder="请输入值班id" />
-        </el-form-item>
-        <el-form-item label="结束时间" prop="endTime">
-          <el-input v-model="form.endTime" placeholder="请输入结束时间" />
-        </el-form-item>
+        
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -208,6 +202,7 @@ export default {
       // 预约信息表格数据
       infoList: [],
       docList:[],
+      userRole:true,
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -245,23 +240,34 @@ export default {
     };
   },
   created() {
-    this.getList();
     this.getList2();
+    this.getList();
   },
+
   methods: {
     /** 查询预约信息列表 */
     getList() {
       this.loading = true;
       listInfo(this.queryParams).then(response => {
-        this.infoList = response.rows;
+       this.infoList=response.rows
         this.total = response.total;
         this.loading = false;
       });
     },getList2() {
       this.loading = true;
       listDoc(this.queryParams).then(response => {
-        this.docList = response.rows;
-      
+      this.docList = response.rows;
+      const data=JSON.parse(sessionStorage.getItem("sessionObj")).data
+      const userName=data.split("\"")[3]
+      console.log(this.docList)
+      this.docList.forEach(element => {
+        console.log(element.docName)
+        console.log(element.docName === userName)
+      if(element.docName === userName){this.queryParams.docId = element.docId
+      this.userRole=false
+      this.handleQuery()
+      }
+      });
       });
     },
     // 取消按钮
