@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mess.mapper.MessageMapper">
+    
+    <resultMap type="Message" id="MessageResult">
+        <result property="messId"    column="mess_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="message"    column="message"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="unreadMess"    column="unread_mess"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectMessageVo">
+        select hm.mess_id, hm.user_id,hu.user_name, hm.message, hm.status, hm.create_by, hm.create_time, hm.update_by, hm.update_time, hm.remark
+        from hos_mess hm
+        left join hos_user hu on hm.user_id=hu.user_id
+    </sql>
+
+    <select id="selectMessageList" parameterType="Message" resultMap="MessageResult">
+        <include refid="selectMessageVo"/>
+        <where>  
+            <if test="userId != null "> and hm.user_id = #{userId}</if>
+            <if test="message != null  and message != ''"> and message = #{message}</if>
+            <if test="status != null  and status != ''"> and hm.status = #{status}</if>
+        </where>
+    </select>
+    <select id="selectAllUser" resultMap="MessageResult">
+        SELECT a.user_id,u.user_name,b.unread_mess,a.create_time from
+            (SELECT user_id,MAX(create_time) as create_time FROM hos_mess GROUP BY user_id ORDER BY create_time DESC) a
+                LEFT JOIN
+            (SELECT user_id,COUNT(status) as unread_mess FROM hos_mess WHERE create_by='0' and status='0' GROUP BY user_id) b
+            on a.user_id=b.user_id
+                LEFT JOIN hos_user u
+              on a.user_id=u.user_id
+    </select>
+
+    <select id="selectMessageByMessId" parameterType="Long" resultMap="MessageResult">
+        <include refid="selectMessageVo"/>
+        where mess_id = #{messId}
+    </select>
+        
+    <insert id="insertMessage" parameterType="Message" useGeneratedKeys="true" keyProperty="messId">
+        insert into hos_mess
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="message != null and message != ''">message,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="message != null and message != ''">#{message},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMessage" parameterType="Message">
+        update hos_mess
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="message != null and message != ''">message = #{message},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where user_id = #{userId} and create_by='0'
+
+    </update>
+
+    <delete id="deleteMessageByMessId" parameterType="Long">
+        delete from hos_mess where mess_id = #{messId}
+    </delete>
+
+    <delete id="deleteMessageByMessIds" parameterType="String">
+        delete from hos_mess where mess_id in 
+        <foreach item="messId" collection="array" open="(" separator="," close=")">
+            #{messId}
+        </foreach>
+    </delete>
+</mapper>

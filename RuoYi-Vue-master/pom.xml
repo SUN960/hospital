@@ -210,6 +210,7 @@
         <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
         <module>ruoyi-hospital</module>
+        <module>ruoyi-mess</module>
     </modules>
     <packaging>pom</packaging>
 
